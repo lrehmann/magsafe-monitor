@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Inspect your Apple MagSafe charger and monitor USB telemetry in Chrome.">
+  <title>MagSafe Monitor</title>
+  <link rel="stylesheet" href="./style.css?v=13">
+  <script type="module" src="./capture.mjs?v=13"></script>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div>
+        <a class="back-link" href="https://luke.lol/">Luke's Tools</a>
+        <h1>MagSafe Monitor</h1>
+        <p class="subtitle">Connect an Apple MagSafe charger over USB and select it in desktop Chrome.</p>
+      </div>
+      <div class="actions">
+        <button type="button" id="connect" class="primary">Select charger</button>
+        <button type="button" id="stop" disabled>Stop monitoring</button>
+        <button type="button" id="export" disabled>Export JSON</button>
+      </div>
+    </header>
+
+    <div class="dashboard">
+      <section class="panel diagnostics" aria-labelledby="diagnostic-title">
+        <h2 id="diagnostic-title">Charger diagnostics</h2>
+        <p role="status" id="diagnostic-status">Select a charger to read its firmware and USB details.</p>
+        <dl class="readings" id="diagnostic-values" hidden></dl>
+      </section>
+
+      <aside class="interfaces" aria-labelledby="interfaces-title">
+        <h2 id="interfaces-title">HID interfaces</h2>
+        <div id="interfaces" class="channels"></div>
+      </aside>
+
+      <section class="panel monitor" id="live-monitor" aria-labelledby="live-title">
+        <h2 id="live-title">Live USB monitor</h2>
+        <div class="live-status" id="live-status" data-state="idle">
+          <p role="status"><span class="dot" aria-hidden="true"></span><span id="live-status-text">Select a charger to start monitoring.</span></p>
+          <div class="live-controls">
+            <label><input type="checkbox" id="live-smoothing"> Median smoothing (3 s)</label>
+            <p class="mono"><span id="live-packets">0</span> USB reports</p>
+          </div>
+        </div>
+        <p class="live-scale-note" id="live-device" hidden></p>
+        <div class="helper" id="helper" hidden>
+          <p id="helper-status">Chrome can listen for A2140 reports. Use the Mac helper to turn on its telemetry stream.</p>
+          <div class="actions">
+            <button type="button" id="pair-helper">Connect Mac helper</button>
+            <a href="./magsafe-mac-helper.zip" id="download-helper">Download helper</a>
+          </div>
+        </div>
+        <div class="live-toolbar" id="live-toolbar" hidden>
+          <label class="filter">Fields <select id="live-fields"><option value="all">All fields</option><option value="combined">Combined plots</option></select></label>
+          <p class="live-scale-note">[Brackets] mark tentative labels.</p>
+        </div>
+        <div class="live-plots" id="live-plots" hidden></div>
+        <template id="live-plot">
+          <figure class="live-plot">
+            <figcaption class="live-label"></figcaption>
+            <div class="live-traces"></div>
+            <canvas class="live-chart" role="img" hidden></canvas>
+          </figure>
+        </template>
+        <template id="live-trace">
+          <div class="live-trace">
+            <p class="live-source"><span class="live-trace-name"></span><code class="live-field"></code></p>
+            <p class="live-value">—</p>
+            <p class="live-hex" hidden>Raw hex <code></code></p>
+            <p class="live-sample-time">No sample yet</p>
+          </div>
+        </template>
+      </section>
+
+      <details class="panel reports">
+        <summary>Input report log</summary>
+        <div class="packet-log" id="packets"><p class="empty">Waiting for HID input reports.</p></div>
+      </details>
+    </div>
+  </main>
+</body>
+</html>
